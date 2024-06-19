@@ -2,6 +2,7 @@ import dictionary from "./dictionary.js";
 
 export default class WordleModel {
   #secret;
+  #won;
   #numOfRows;
   #numOfCols;
   #currentRow;
@@ -11,13 +12,36 @@ export default class WordleModel {
   constructor(numOfRows, numOfCols) {
     this.#numOfRows = numOfRows;
     this.#numOfCols = numOfCols;
-    this.#resetGameState();
-    console.log(this.#secret);
+    this.resetGameState();
   }
 
   get state() {
     return this.#grid.map((row) =>
       [...row].map((cell) => Object.assign({}, cell)),
+    );
+  }
+
+  get won() {
+    return this.#won;
+  }
+
+  resetGameState() {
+    this.#currentRow = 0;
+    this.#currentCol = 0;
+    this.#won = false;
+    this.#secret = dictionary[Math.floor(Math.random() * dictionary.length)];
+
+    console.log(this.#secret);
+
+    const defaultCellState = {
+      value: "",
+      status: "default",
+    };
+
+    this.#grid = Array.from({ length: this.#numOfRows }, () =>
+      Array.from({ length: this.#numOfCols }, () =>
+        Object.assign({}, defaultCellState),
+      ),
     );
   }
 
@@ -48,27 +72,11 @@ export default class WordleModel {
       this.#currentRow++;
       this.#currentCol = 0;
 
+      this.#won = result;
       return result;
     }
 
     return false;
-  }
-
-  #resetGameState() {
-    this.#currentRow = 0;
-    this.#currentCol = 0;
-    this.#secret = dictionary[Math.floor(Math.random() * dictionary.length)];
-
-    const defaultCellState = {
-      value: "",
-      status: "default",
-    };
-
-    this.#grid = Array.from({ length: this.#numOfRows }, () =>
-      Array.from({ length: this.#numOfCols }, () =>
-        Object.assign({}, defaultCellState),
-      ),
-    );
   }
 
   #processGuess() {

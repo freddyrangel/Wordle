@@ -16,6 +16,10 @@ function start() {
 
 function registerKeyboardEvents(model, grid) {
   document.body.onkeydown = ({ key }) => {
+    if (model.won) {
+      model.resetGameState();
+    }
+
     switch (key) {
       case "Backspace":
         model.removeLetter();
@@ -26,7 +30,7 @@ function registerKeyboardEvents(model, grid) {
           if (result) {
             grid.update(model.state);
             setTimeout(() => {
-              alert("You win!");
+              alert("You win! Press any key to play again.");
             }, 0);
           }
         } else if (model.isCompleteWord()) {
