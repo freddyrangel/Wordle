@@ -1,23 +1,47 @@
-export function createGrid({ state, numOfRows, numOfCols }) {
-  const grid = document.getElementById("grid");
+export default class Grid {
+  #gridState;
+  #numOfRows;
+  #numOfCols;
 
-  for (let row = 0; row < numOfRows; row++) {
-    for (let col = 0; col < numOfCols; col++) {
-      const cell = createCell({
-        id: `cell-${row}-${col}`,
-        letter: state.grid[row][col],
-      });
-      grid.appendChild(cell);
+  constructor(gridState, numOfRows, numOfCols) {
+    this.#gridState = gridState;
+    this.#numOfRows = numOfRows;
+    this.#numOfCols = numOfCols;
+  }
+
+  render(element) {
+    for (let row = 0; row < this.#numOfRows; row++) {
+      for (let col = 0; col < this.#numOfCols; col++) {
+        const cell = this.#createCell({
+          id: `cell-${row}-${col}`,
+          letter: this.#gridState[row][col],
+        });
+        element.appendChild(cell);
+      }
     }
   }
 
-  return grid;
-}
+  update(newGridState) {
+    for (let row = 0; row < this.#numOfRows; row++) {
+      for (let col = 0; col < this.#numOfCols; col++) {
+        const isNewLetter =
+          newGridState[row][col] !== this.#gridState[row][col];
 
-function createCell({ id, letter }) {
-  const cell = document.createElement("div");
-  cell.className = "cell";
-  cell.id = id;
-  cell.innerText = letter;
-  return cell;
+        if (isNewLetter) {
+          const cell = document.getElementById(`cell-${row}-${col}`);
+          cell.textContent = newGridState[row][col];
+        }
+      }
+    }
+
+    this.#gridState = newGridState;
+  }
+
+  #createCell({ id, letter }) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.id = id;
+    cell.innerText = letter;
+    return cell;
+  }
 }
