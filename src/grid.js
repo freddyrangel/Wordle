@@ -12,10 +12,14 @@ export default class Grid {
   render(element) {
     for (let row = 0; row < this.#numOfRows; row++) {
       for (let col = 0; col < this.#numOfCols; col++) {
+        const { value, status } = this.#gridState[row][col];
+
         const cell = this.#createCell({
           id: `cell-${row}-${col}`,
-          letter: this.#gridState[row][col],
+          class: `cell ${status}`,
+          letter: value,
         });
+
         element.appendChild(cell);
       }
     }
@@ -24,12 +28,15 @@ export default class Grid {
   update(newGridState) {
     for (let row = 0; row < this.#numOfRows; row++) {
       for (let col = 0; col < this.#numOfCols; col++) {
-        const isNewLetter =
-          newGridState[row][col] !== this.#gridState[row][col];
+        const shouldUpdate = this.#areCellsDifferent(
+          newGridState[row][col],
+          this.#gridState[row][col],
+        );
 
-        if (isNewLetter) {
+        if (shouldUpdate) {
           const cell = document.getElementById(`cell-${row}-${col}`);
-          cell.textContent = newGridState[row][col];
+          cell.className = `cell ${newGridState[row][col].status}`;
+          cell.textContent = newGridState[row][col].value;
         }
       }
     }
@@ -43,5 +50,9 @@ export default class Grid {
     cell.id = id;
     cell.innerText = letter;
     return cell;
+  }
+
+  #areCellsDifferent(newCell, oldCell) {
+    return newCell.value !== oldCell.value || newCell.status !== oldCell.status;
   }
 }
