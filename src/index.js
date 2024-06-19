@@ -18,6 +18,8 @@ function registerKeyboardEvents(model, grid) {
   document.body.onkeydown = ({ key }) => {
     if (model.won) {
       model.resetGameState();
+      grid.update(model.state);
+      return;
     }
 
     switch (key) {
