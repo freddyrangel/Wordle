@@ -16,7 +16,9 @@ function start() {
 
 function registerKeyboardEvents(model, grid) {
   document.body.onkeydown = ({ key }) => {
-    if (model.won) {
+    const gameResult = model.gameResult;
+
+    if (gameResult === "Correct" || gameResult === "Game Over") {
       model.resetGameState();
       grid.update(model.state);
       return;
@@ -29,12 +31,15 @@ function registerKeyboardEvents(model, grid) {
       case "Enter":
         if (model.isWordInWordList()) {
           const result = model.checkGuess();
-          if (result) {
-            grid.update(model.state);
-            setTimeout(() => {
+          grid.update(model.state);
+
+          setTimeout(() => {
+            if (result === "Correct") {
               alert("You win! Press any key to play again.");
-            }, 0);
-          }
+            } else if (result === "Game Over") {
+              alert("Game Over! Press any key to play again.");
+            }
+          }, 10);
         } else if (model.isCompleteWord()) {
           alert("Not in word list");
         } else {

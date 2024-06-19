@@ -2,7 +2,7 @@ import dictionary from "./dictionary.js";
 
 export default class WordleModel {
   #secret;
-  #won;
+  #gameResult;
   #numOfRows;
   #numOfCols;
   #currentRow;
@@ -21,14 +21,14 @@ export default class WordleModel {
     );
   }
 
-  get won() {
-    return this.#won;
+  get gameResult() {
+    return this.#gameResult;
   }
 
   resetGameState() {
     this.#currentRow = 0;
     this.#currentCol = 0;
-    this.#won = false;
+    this.#gameResult = false;
     this.#secret = dictionary[Math.floor(Math.random() * dictionary.length)];
 
     console.log(this.#secret);
@@ -72,11 +72,14 @@ export default class WordleModel {
       this.#currentRow++;
       this.#currentCol = 0;
 
-      this.#won = result;
-      return result;
-    }
+      if (result) {
+        this.#gameResult = "Correct";
+      } else if (this.#currentRow === this.#numOfRows) {
+        this.#gameResult = "Game Over";
+      }
 
-    return false;
+      return this.#gameResult;
+    }
   }
 
   #processGuess() {
