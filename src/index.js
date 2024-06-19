@@ -21,8 +21,19 @@ function registerKeyboardEvents(model, grid) {
         model.removeLetter();
         break;
       case "Enter":
-        const isValidWord = model.checkGuess();
-        if (!isValidWord) alert("Not in word list");
+        if (model.isWordInWordList()) {
+          const result = model.checkGuess();
+          if (result) {
+            grid.update(model.state);
+            setTimeout(() => {
+              alert("You win!");
+            }, 0);
+          }
+        } else if (model.isCompleteWord()) {
+          alert("Not in word list");
+        } else {
+          alert("Word is incomplete");
+        }
         break;
       default:
         model.addLetter(key);

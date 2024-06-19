@@ -22,7 +22,7 @@ export default class WordleModel {
   }
 
   addLetter(letter) {
-    if (!this.#isValidLetter(letter) || this.#isEndOfRow()) return;
+    if (!this.#isValidLetter(letter) || this.isCompleteWord()) return;
     this.#grid[this.#currentRow][this.#currentCol].value = letter.toLowerCase();
     this.#currentCol++;
   }
@@ -33,19 +33,25 @@ export default class WordleModel {
     this.#currentCol--;
   }
 
-  checkGuess() {
-    if (!this.#isEndOfRow()) return;
+  isCompleteWord() {
+    return this.#currentCol === this.#numOfCols;
+  }
 
+  isWordInWordList() {
     const word = this.#getCurrentWord();
+    return dictionary.includes(word);
+  }
 
-    if (this.#isWordInWordList(word)) {
-      this.#processGuess(word);
+  checkGuess() {
+    if (this.isWordInWordList()) {
+      const result = this.#processGuess();
       this.#currentRow++;
       this.#currentCol = 0;
-      return true;
-    } else {
-      return false;
+
+      return result;
     }
+
+    return false;
   }
 
   #resetGameState() {
@@ -65,7 +71,8 @@ export default class WordleModel {
     );
   }
 
-  #processGuess(guess) {
+  #processGuess() {
+    const guess = this.#getCurrentWord();
     const newStatuses = Array(5).fill("default");
     const secretLetterCount = this.#secret
       .split("")
@@ -93,21 +100,15 @@ export default class WordleModel {
     for (let col = 0; col < this.#numOfCols; col++) {
       this.#grid[this.#currentRow][col].status = newStatuses[col];
     }
+
+    return newStatuses.every((status) => status === "correct");
   }
 
   #isValidLetter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
   }
 
-  #isEndOfRow() {
-    return this.#currentCol === this.#numOfCols;
-  }
-
   #getCurrentWord() {
     return this.#grid[this.#currentRow].map((cell) => cell.value).join("");
-  }
-
-  #isWordInWordList(word) {
-    return dictionary.includes(word);
   }
 }
